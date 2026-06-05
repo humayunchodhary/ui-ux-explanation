@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI/UX Design — Importance in Web Development</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+--primary: #2563EB; --primary-light: #3B82F6; --primary-dark: #1D4ED8;
+--success: #10B981; --error: #EF4444; --warning: #F59E0B;
+--dark-bg: #0F172A; --darker-bg: #020617; --card-bg: #1E293B;
+--text-primary: #F8FAFC; --text-secondary: #94A3B8; --text-muted: #64748B;
+--border: #334155;
+--gradient-1: linear-gradient(135deg, #2563EB 0%, #7C3AED 50%, #EC4899 100%);
+--shadow-glow: 0 0 40px rgba(37,99,235,0.3);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+font-family: 'Inter', sans-serif; background: var(--darker-bg); color: var(--text-primary);
+overflow-x: hidden; line-height: 1.6;
+}
+#particle-canvas {
+position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
+}
+.scroll-progress {
+position: fixed; top: 0; left: 0; height: 3px; background: var(--gradient-1); z-index: 1000;
+transition: width 0.1s; box-shadow: 0 0 10px rgba(37,99,235,0.5);
+}
+.nav-bar {
+position: fixed; top: 0; left: 0; right: 0; z-index: 999; padding: 1rem 2rem;
+display: flex; justify-content: space-between; align-items: center;
+background: rgba(15,23,42,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
+transform: translateY(-100%); animation: navSlideDown 0.6s ease forwards 0.5s;
+}
+@keyframes navSlideDown { to { transform: translateY(0); } }
+.nav-logo {
+font-weight: 800; font-size: 1.2rem; background: var(--gradient-1);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500;
+transition: all 0.3s; position: relative;
+}
+.nav-links a::after {
+content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+background: var(--gradient-1); transition: width 0.3s;
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-links a:hover::after { width: 100%; }
+section {
+position: relative; z-index: 1; min-height: 100vh; padding: 6rem 2rem 4rem;
+display: flex; flex-direction: column; justify-content: center; align-items: center;
+}
+.reveal {
+opacity: 0; transform: translateY(60px);
+transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active { opacity: 1; transform: translateY(0); }
+.reveal-left {
+opacity: 0; transform: translateX(-80px);
+transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-left.active { opacity: 1; transform: translateX(0); }
+.reveal-right {
+opacity: 0; transform: translateX(80px);
+transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-right.active { opacity: 1; transform: translateX(0); }
+.reveal-scale {
+opacity: 0; transform: scale(0.8);
+transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-scale.active { opacity: 1; transform: scale(1); }
+.hero { text-align: center; position: relative; overflow: hidden; }
+.hero-badge {
+display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.2rem;
+background: rgba(37,99,235,0.15); border: 1px solid rgba(37,99,235,0.3); border-radius: 50px;
+font-size: 0.85rem; color: var(--primary-light); margin-bottom: 2rem;
+animation: badgePulse 2s ease-in-out infinite;
+}
+@keyframes badgePulse {
+0%,100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+50% { box-shadow: 0 0 20px 5px rgba(37,99,235,0.2); }
+}
+.hero h1 {
+font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem;
+}
+.hero h1 .gradient-text {
+background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+background-clip: text; animation: gradientShift 3s ease infinite; background-size: 200% 200%;
+}
+@keyframes gradientShift {
+0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
+}
+.hero-subtitle {
+font-size: clamp(1rem, 2vw, 1.3rem); color: var(--text-secondary); max-width: 700px; margin: 0 auto 2rem;
+}
+.hero-presenters { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+.presenter-card {
+display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem;
+background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; transition: all 0.4s;
+}
+.presenter-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: var(--shadow-glow); }
+.presenter-avatar {
+width: 50px; height: 50px; border-radius: 50%; background: var(--gradient-1);
+display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;
+}
+.presenter-info h4 { font-size: 1rem; margin-bottom: 0.2rem; }
+.presenter-info p { font-size: 0.8rem; color: var(--text-muted); }
+.floating-icon {
+position: absolute; font-size: 2rem; color: var(--primary); opacity: 0.15;
+animation: float 6s ease-in-out infinite;
+}
+.floating-icon:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+.floating-icon:nth-child(2) { top: 60%; right: 15%; animation-delay: 1s; }
+.floating-icon:nth-child(3) { bottom: 20%; left: 20%; animation-delay: 2s; }
+.floating-icon:nth-child(4) { top: 30%; right: 25%; animation-delay: 3s; }
+@keyframes float {
+0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); }
+}
+.scroll-indicator {
+position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+display: flex; flex-direction: column; align-items: center; gap: 0.5rem; animation: bounce 2s infinite;
+}
+.scroll-indicator span {
+font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;
+}
+.scroll-indicator .mouse { width: 24px; height: 40px; border: 2px solid var(--text-muted); border-radius: 12px; position: relative; }
+.scroll-indicator .mouse::before {
+content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+width: 4px; height: 8px; background: var(--primary); border-radius: 2px; animation: scrollWheel 1.5s infinite;
+}
+@keyframes scrollWheel { 0% { top: 8px; opacity: 1; } 100% { top: 20px; opacity: 0; } }
+@keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(10px); } }
+.chapter-header { text-align: center; margin-bottom: 4rem; }
+.chapter-number {
+display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 500;
+color: var(--primary); padding: 0.4rem 1rem; border: 1px solid var(--primary); border-radius: 50px;
+margin-bottom: 1rem; position: relative; overflow: hidden;
+}
+.chapter-number::before {
+content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+background: var(--primary); transition: left 0.4s; z-index: -1;
+}
+.chapter-number:hover::before { left: 0; }
+.chapter-number:hover { color: white; }
+.chapter-header h2 { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 800; margin-bottom: 1rem; }
+.chapter-header p { color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+.cards-grid {
+display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;
+width: 100%; max-width: 1200px;
+}
+.card {
+background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 2rem;
+transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); position: relative; overflow: hidden;
+}
+.card::before {
+content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+background: var(--gradient-1); transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+}
+.card:hover::before { transform: scaleX(1); }
+.card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: var(--shadow-glow); }
+.card-icon {
+width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+font-size: 1.5rem; margin-bottom: 1.5rem; background: rgba(37,99,235,0.15); color: var(--primary); transition: all 0.4s;
+}
+.card:hover .card-icon { transform: scale(1.1) rotate(5deg); background: var(--primary); color: white; }
+.card h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; }
+.card ul { list-style: none; }
+.card ul li { padding: 0.4rem 0; color: var(--text-secondary); font-size: 0.9rem; display: flex; align-items: flex-start; gap: 0.5rem; }
+.card ul li::before { content: '>'; color: var(--primary); font-weight: bold; }
+.stats-grid {
+display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;
+width: 100%; max-width: 1000px;
+}
+.stat-card {
+background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 2rem;
+text-align: center; transition: all 0.4s; position: relative; overflow: hidden;
+}
+.stat-card::after {
+content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px;
+background: var(--gradient-1); transform: scaleX(0); transition: transform 0.4s;
+}
+.stat-card:hover::after { transform: scaleX(1); }
+.stat-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+.stat-number {
+font-size: 3rem; font-weight: 900; background: var(--gradient-1); -webkit-background-clip: text;
+-webkit-text-fill-color: transparent; background-clip: text; line-height: 1; margin-bottom: 0.5rem;
+}
+.stat-label { color: var(--text-secondary); font-size: 0.9rem; }
+.principles-grid {
+display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;
+width: 100%; max-width: 1100px;
+}
+.principle-card {
+background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem;
+transition: all 0.4s; cursor: pointer;
+}
+.principle-card:hover { transform: translateY(-5px) scale(1.02); border-color: var(--primary); box-shadow: 0 10px 30px rgba(37,99,235,0.2); }
+.principle-card .principle-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--primary); margin-bottom: 0.5rem; }
+.principle-card h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.principle-card p { font-size: 0.85rem; color: var(--text-secondary); }
+
+.code-block {
+background: #0D1117; border: 1px solid #30363D; border-radius: 16px; overflow: hidden;
+width: 100%; max-width: 700px; margin: 1rem auto; transition: all 0.4s;
+}
+.code-block:hover { border-color: var(--primary); box-shadow: 0 0 30px rgba(37,99,235,0.15); }
+.code-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #161B22; border-bottom: 1px solid #30363D; }
+.code-dot { width: 12px; height: 12px; border-radius: 50%; }
+.code-dot.red { background: #FF5F56; } .code-dot.yellow { background: #FFBD2E; } .code-dot.green { background: #27C93F; }
+.code-lang { margin-left: auto; font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.code-content { padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.8; overflow-x: auto; color: #E6EDF3; }
+.code-content .comment { color: #8B949E; } .code-content .keyword { color: #FF7B72; } .code-content .string { color: #A5D6FF; }
+.code-content .function { color: #D2A8FF; } .code-content .tag { color: #7EE787; } .code-content .attr { color: #79C0FF; } .code-content .number { color: #79C0FF; }
+.comparison-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; width: 100%; max-width: 1000px; }
+@media (max-width: 768px) { .comparison-container { grid-template-columns: 1fr; } }
+.comparison-card { border-radius: 20px; padding: 2rem; transition: all 0.4s; }
+.comparison-card.bad { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); }
+.comparison-card.bad:hover { border-color: var(--error); box-shadow: 0 0 30px rgba(239,68,68,0.2); }
+.comparison-card.good { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); }
+.comparison-card.good:hover { border-color: var(--success); box-shadow: 0 0 30px rgba(16,185,129,0.2); }
+.comparison-card h3 { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; font-size: 1.2rem; }
+.comparison-card.bad h3 { color: var(--error); } .comparison-card.good h3 { color: var(--success); }
+.comparison-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.comparison-item:last-child { border-bottom: none; }
+.comparison-item i { margin-top: 0.2rem; font-size: 1rem; }
+.comparison-item.bad i { color: var(--error); } .comparison-item.good i { color: var(--success); }
+.comparison-item p { font-size: 0.9rem; color: var(--text-secondary); }
+.comparison-item strong { color: var(--text-primary); display: block; margin-bottom: 0.2rem; }
+.mockup-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; width: 100%; max-width: 1100px; align-items: start; }
+@media (max-width: 768px) { .mockup-comparison { grid-template-columns: 1fr; } }
+.mockup-card { border-radius: 20px; overflow: hidden; transition: all 0.4s; }
+.mockup-card.bad-mockup { border: 2px solid var(--error); } .mockup-card.good-mockup { border: 2px solid var(--success); }
+.mockup-card:hover { transform: translateY(-10px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+.mockup-header { padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+.mockup-card.bad-mockup .mockup-header { background: rgba(239,68,68,0.2); } .mockup-card.good-mockup .mockup-header { background: rgba(16,185,129,0.2); }
+.mockup-body { padding: 2rem; background: var(--card-bg); }
+.bad-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.bad-nav a { font-size: 0.7rem; color: #FF0000; text-decoration: underline; font-weight: bold; }
+.bad-title { font-size: 1.5rem; color: #FF0000; font-weight: bold; text-transform: uppercase; margin-bottom: 1rem; animation: badShake 0.5s infinite; }
+@keyframes badShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+.bad-input { width: 100%; padding: 0.5rem; border: 1px solid #999; margin-bottom: 0.5rem; font-size: 0.8rem; }
+.bad-button { background: #CCCCCC; border: 2px outset #999; padding: 0.5rem 1rem; font-size: 0.8rem; cursor: pointer; }
+.bad-text { font-size: 0.7rem; color: #666; margin-top: 1rem; line-height: 1.4; }
+.good-nav { display: flex; gap: 1.5rem; margin-bottom: 2rem; align-items: center; }
+.good-nav .logo { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+.good-nav a { color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; transition: color 0.3s; }
+.good-nav a:hover { color: var(--text-primary); } .good-nav .signin { margin-left: auto; color: var(--primary); font-weight: 600; }
+.good-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+.good-subtitle { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 2rem; }
+.good-label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary); }
+.good-input { width: 100%; padding: 0.875rem 1rem; background: var(--darker-bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 0.9rem; margin-bottom: 1rem; transition: all 0.3s; }
+.good-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+.good-helper { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+.good-helper i { color: var(--primary); }
+.good-button { width: 100%; padding: 0.875rem; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.good-button:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 5px 20px rgba(37,99,235,0.4); }
+.good-footer { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-secondary); }
+.good-footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; width: 100%; max-width: 1000px; }
+.tool-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; text-align: center; transition: all 0.4s; cursor: pointer; }
+.tool-card:hover { transform: translateY(-8px) scale(1.03); border-color: var(--primary); box-shadow: var(--shadow-glow); }
+.tool-icon { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1rem; transition: all 0.4s; }
+.tool-card:hover .tool-icon { transform: rotate(10deg) scale(1.1); }
+.tool-card:nth-child(1) .tool-icon { background: rgba(37,99,235,0.15); color: #F24E1E; }
+.tool-card:nth-child(2) .tool-icon { background: rgba(124,58,237,0.15); color: #FF61F6; }
+.tool-card:nth-child(3) .tool-icon { background: rgba(16,185,129,0.15); color: #10B981; }
+.tool-card:nth-child(4) .tool-icon { background: rgba(59,130,246,0.15); color: #3B82F6; }
+.tool-card:nth-child(5) .tool-icon { background: rgba(139,92,246,0.15); color: #8B5CF6; }
+.tool-card:nth-child(6) .tool-icon { background: rgba(245,158,11,0.15); color: #F59E0B; }
+.tool-card:nth-child(7) .tool-icon { background: rgba(239,68,68,0.15); color: #EF4444; }
+.tool-card:nth-child(8) .tool-icon { background: rgba(6,182,212,0.15); color: #06B6D4; }
+.tool-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+.tool-card .tool-tag { display: inline-block; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 50px; background: rgba(37,99,235,0.15); color: var(--primary-light); margin-bottom: 0.5rem; }
+.tool-card p { font-size: 0.8rem; color: var(--text-secondary); }
+.timeline { position: relative; max-width: 800px; width: 100%; }
+.timeline::before { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 2px; height: 100%; background: var(--gradient-1); top: 0; }
+@media (max-width: 768px) { .timeline::before { left: 20px; } }
+.timeline-item { display: flex; justify-content: flex-end; padding-right: 50%; position: relative; margin-bottom: 3rem; }
+.timeline-item:nth-child(even) { justify-content: flex-start; padding-right: 0; padding-left: 50%; }
+@media (max-width: 768px) { .timeline-item, .timeline-item:nth-child(even) { justify-content: flex-start; padding-left: 50px; padding-right: 0; } }
+.timeline-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; max-width: 350px; transition: all 0.4s; position: relative; }
+.timeline-content:hover { transform: scale(1.05); border-color: var(--primary); box-shadow: var(--shadow-glow); }
+.timeline-num { position: absolute; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; background: var(--gradient-1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; box-shadow: 0 0 20px rgba(37,99,235,0.5); z-index: 2; }
+@media (max-width: 768px) { .timeline-num { left: 20px; transform: translateX(-50%); } }
+.timeline-content h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--primary-light); }
+.timeline-content p { font-size: 0.85rem; color: var(--text-secondary); }
+.color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 400px; }
+.color-swatch { border-radius: 16px; padding: 1.5rem; text-align: center; transition: all 0.4s; cursor: pointer; }
+.color-swatch:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.color-swatch .color-hex { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+.color-swatch .color-name { font-size: 0.75rem; opacity: 0.8; }
+.type-scale { display: flex; flex-direction: column; gap: 1rem; max-width: 500px; }
+.type-item { display: flex; align-items: baseline; gap: 1rem; padding: 1rem; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); transition: all 0.3s; }
+.type-item:hover { border-color: var(--primary); transform: translateX(10px); }
+.type-item .type-size { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--primary); min-width: 60px; }
+.type-item .type-example { flex: 1; }
+.type-item .type-tag { font-size: 0.75rem; color: var(--text-muted); padding: 0.2rem 0.5rem; background: rgba(37,99,235,0.1); border-radius: 4px; }
+.breakpoint-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 700px; }
+@media (max-width: 768px) { .breakpoint-cards { grid-template-columns: 1fr; } }
+.breakpoint-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; text-align: center; transition: all 0.4s; }
+.breakpoint-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+.breakpoint-icon { font-size: 2.5rem; margin-bottom: 1rem; transition: all 0.4s; }
+.breakpoint-card:hover .breakpoint-icon { transform: scale(1.2); }
+.breakpoint-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+.breakpoint-card p { font-size: 0.85rem; color: var(--text-secondary); }
+.checklist { list-style: none; max-width: 400px; }
+.checklist li { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; font-size: 0.9rem; color: var(--text-secondary); transition: all 0.3s; }
+.checklist li:hover { color: var(--text-primary); transform: translateX(10px); }
+.checklist li i { color: var(--success); font-size: 1.1rem; }
+.takeaways-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; max-width: 1000px; width: 100%; }
+.takeaway-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; display: flex; gap: 1rem; align-items: flex-start; transition: all 0.4s; }
+.takeaway-card:hover { transform: translateX(10px); border-color: var(--primary); box-shadow: var(--shadow-glow); }
+.takeaway-icon { width: 45px; height: 45px; min-width: 45px; border-radius: 12px; background: rgba(37,99,235,0.15); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.2rem; }
+.takeaway-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+.footer-section { text-align: center; background: var(--darker-bg); border-top: 1px solid var(--border); }
+.footer-section h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; }
+.footer-section .gradient-text { background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.footer-section p { color: var(--text-secondary); margin-bottom: 2rem; }
+.footer-cta { display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: var(--gradient-1); color: white; border: none; border-radius: 50px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.4s; text-decoration: none; }
+.footer-cta:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(37,99,235,0.4); }
+.section-divider { width: 60px; height: 4px; background: var(--gradient-1); border-radius: 2px; margin: 1rem auto 2rem; }
+.glow-bg { position: absolute; width: 400px; height: 400px; border-radius: 50%; background: var(--primary); filter: blur(150px); opacity: 0.1; pointer-events: none; z-index: 0; }
+.two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; max-width: 1100px; width: 100%; }
+@media (max-width: 768px) { .two-column { grid-template-columns: 1fr; gap: 2rem; } .nav-links { display: none; } section { padding: 5rem 1rem 3rem; } .hero h1 { font-size: 2.5rem; } }
+.counter { font-variant-numeric: tabular-nums; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--darker-bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+<canvas id="particle-canvas"></canvas>
+
+<nav class="nav-bar">
+<div class="nav-logo">UI/UX Design</div>
+<ul class="nav-links">
+<li><a href="#foundations">Foundations</a></li>
+<li><a href="#platforms">Platforms</a></li>
+<li><a href="#design-systems">Design Systems</a></li>
+<li><a href="#application">Application</a></li>
+<li><a href="#tools">Tools</a></li>
+</ul>
+</nav>
+
+<section class="hero" id="hero">
+<div class="glow-bg" style="top:-100px;left:-100px"></div>
+<div class="glow-bg" style="bottom:-100px;right:-100px;background:#7C3AED"></div>
+<div class="floating-icon"><i class="fas fa-palette"></i></div>
+<div class="floating-icon"><i class="fas fa-code"></i></div>
+<div class="floating-icon"><i class="fas fa-mobile-alt"></i></div>
+<div class="floating-icon"><i class="fas fa-layer-group"></i></div>
+
+<div class="reveal-scale">
+<div class="hero-badge"><i class="fas fa-university"></i> Air University Kharian Campus</div>
+</div>
+<h1 class="reveal"><span class="gradient-text">UI/UX Design</span><br>Importance in<br>Web Development</h1>
+<p class="hero-subtitle reveal">Windows Forms · Blazor · Web Design Principles<br>A comprehensive guide to building exceptional digital experiences</p>
+<div class="hero-presenters reveal">
+<div class="presenter-card"><div class="presenter-avatar">H</div><div class="presenter-info"><h4>Humayun</h4><p>Presenter</p></div></div>
+<div class="presenter-card"><div class="presenter-avatar">MQ</div><div class="presenter-info"><h4>Maaz Qasir</h4><p>Co-Presenter</p></div></div>
+</div>
+<div class="scroll-indicator"><span>Scroll</span><div class="mouse"></div></div>
+</section>
+
+<section id="overview">
+<div class="chapter-header reveal">
+<div class="chapter-number">OVERVIEW</div>
+<h2>What We'll Cover</h2>
+<div class="section-divider"></div>
+</div>
+<div class="cards-grid">
+<div class="card reveal"><div class="card-icon"><i class="fas fa-foundation"></i></div><h3>01 Foundations</h3><ul><li>UI/UX basics and core concepts</li><li>Design principles and heuristics</li><li>User psychology and behavior</li><li>Visual hierarchy fundamentals</li></ul></div>
+<div class="card reveal"><div class="card-icon"><i class="fas fa-laptop-code"></i></div><h3>02 Platform Deep-Dives</h3><ul><li>Windows Forms applications</li><li>Blazor web framework</li><li>Modern HTML/CSS/JS</li><li>Cross-platform considerations</li></ul></div>
+<div class="card reveal"><div class="card-icon"><i class="fas fa-swatchbook"></i></div><h3>03 Design Systems & Process</h3><ul><li>Color theory and palettes</li><li>Typography and scale</li><li>UX workflow and methodology</li><li>Component libraries</li></ul></div>
+<div class="card reveal"><div class="card-icon"><i class="fas fa-rocket"></i></div><h3>04 Real-World Application</h3><ul><li>Responsive design strategies</li><li>Good vs Bad UX examples</li><li>Professional tools & workflows</li><li>Key takeaways & best practices</li></ul></div>
+</div>
+</section>
+
+<section id="foundations">
+<div class="glow-bg" style="top:20%;right:-200px;background:#EC4899"></div>
+<div class="chapter-header reveal">
+<div class="chapter-number">CHAPTER 01</div>
+<h2>Foundations</h2>
+<p>Understanding UI/UX Design and Core Principles</p>
+<div class="section-divider"></div>
+</div>
+<div class="two-column" style="margin-bottom:4rem">
+<div class="reveal-left"><div class="card" style="max-width:500px"><div class="card-icon"><i class="fas fa-desktop"></i></div><h3>UI — User Interface</h3><ul><li>Visual layout & presentation</li><li>Colors, typography & spacing</li><li>Buttons, icons, forms & menus</li><li>Responsive & adaptive grids</li><li>Consistent design language</li></ul></div></div>
+<div class="reveal-right"><div class="card" style="max-width:500px"><div class="card-icon"><i class="fas fa-heart"></i></div><h3>UX — User Experience</h3><ul><li>User research & empathy</li><li>Wireframing & prototyping</li><li>Navigation & information flow</li><li>Accessibility & usability</li><li>Testing & iteration cycles</li></ul></div></div>
+</div>
+<p class="reveal" style="text-align:center;color:var(--text-secondary);max-width:700px;font-size:1.1rem;margin-bottom:4rem"><i class="fas fa-quote-left" style="color:var(--primary);margin-right:0.5rem"></i>Together, UI and UX shape every digital interaction a user has with your software.<i class="fas fa-quote-right" style="color:var(--primary);margin-left:0.5rem"></i></p>
+<div class="chapter-header reveal"><h3 style="font-size:1.8rem;margin-bottom:1rem">Why UI/UX Matters</h3><p>The business case for great design</p></div>
+<div class="stats-grid">
+<div class="stat-card reveal"><div class="stat-number counter" data-target="88">0</div><div class="stat-label">of users won't return after a bad experience</div></div>
+<div class="stat-card reveal"><div class="stat-number counter" data-target="200">0</div><div class="stat-label">% ROI increase from investing in better UX</div></div>
+<div class="stat-card reveal"><div class="stat-number counter" data-target="50">0</div><div class="stat-label">% less development rework when UX is done early</div></div>
+<div class="stat-card reveal"><div class="stat-number" style="font-size:2.5rem">$100</div><div class="stat-label">saved for every $1 spent on UX during design</div></div>
+</div>
+<div class="chapter-header reveal" style="margin-top:5rem"><h3 style="font-size:1.8rem;margin-bottom:1rem">Core Design Principles</h3></div>
+<div class="principles-grid">
+<div class="principle-card reveal"><div class="principle-num">01</div><h4><i class="fas fa-equals" style="color:var(--primary);margin-right:0.5rem"></i>Consistency</h4><p>Same styles, colors, and behavior across all screens. Reduces the learning curve for users.</p></div>
+<div class="principle-card reveal"><div class="principle-num">02</div><h4><i class="fas fa-sort-amount-down" style="color:var(--primary);margin-right:0.5rem"></i>Hierarchy</h4><p>Visual importance guides users. Size, contrast, and placement direct attention effectively.</p></div>
+<div class="principle-card reveal"><div class="principle-num">03</div><h4><i class="fas fa-reply" style="color:var(--primary);margin-right:0.5rem"></i>Feedback</h4><p>Every action gets a response — hover states, loading, success, and error messages.</p></div>
+<div class="principle-card reveal"><div class="principle-num">04</div><h4><i class="fas fa-universal-access" style="color:var(--primary);margin-right:0.5rem"></i>Accessibility</h4><p>WCAG compliance, keyboard navigation, screen reader support, and proper contrast ratios.</p></div>
+<div class="principle-card reveal"><div class="principle-num">05</div><h4><i class="fas fa-feather" style="color:var(--primary);margin-right:0.5rem"></i>Simplicity</h4><p>Remove the unnecessary. Each element must earn its place on the screen.</p></div>
+<div class="principle-card reveal"><div class="principle-num">06</div><h4><i class="fas fa-hand-pointer" style="color:var(--primary);margin-right:0.5rem"></i>User Control</h4><p>Undo actions, clear navigation, no dead ends. Empower the user always.</p></div>
+</div>
+</section>
+
+<section id="platforms">
+<div class="glow-bg" style="bottom:10%;left:-200px;background:#10B981"></div>
+<div class="chapter-header reveal">
+<div class="chapter-number">CHAPTER 02</div>
+<h2>Platform Deep-Dives</h2>
+<p>Implementing UI/UX in Windows Forms, Blazor & Modern Web</p>
+<div class="section-divider"></div>
+</div>
+<div class="two-column" style="margin-bottom:4rem">
+<div class="reveal-left"><div class="card"><div class="card-icon"><i class="fab fa-windows"></i></div><h3>UI/UX in Windows Forms</h3><p style="color:var(--text-secondary);margin-bottom:1rem">Windows Forms (WinForms) is a .NET GUI framework for building desktop applications. It uses a drag-and-drop designer with event-driven C# code.</p><ul><li>Use consistent font: Segoe UI 9pt</li><li>Tab ordering for keyboard navigation</li><li>ToolTip on every input control</li><li>Proper error providers & validation</li><li>MessageBox for clear feedback</li><li>Group related controls with GroupBox</li></ul></div></div>
+<div class="reveal-right"><div class="code-block"><div class="code-header"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div><span class="code-lang">C# · Windows Forms</span></div><div class="code-content"><span class="comment">// Set consistent font for entire form</span><br><span class="keyword">this</span>.Font = <span class="keyword">new</span> Font(<span class="string">"Segoe UI"</span>, <span class="number">9f</span>);<br><br><span class="comment">// Keyboard Tab Order</span><br>txtName.TabIndex = <span class="number">0</span>;<br>txtEmail.TabIndex = <span class="number">1</span>;<br><br><span class="comment">// Tooltip for UX feedback</span><br>ToolTip tip = <span class="keyword">new</span> ToolTip();<br>tip.SetToolTip(txtName, <span class="string">"Enter name"</span>);<br><br><span class="comment">// Validation with ErrorProvider</span><br><span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrEmpty(txtName.Text))<br>{<br>    errProvider.SetError(<br>        txtName, <span class="string">"Name required"</span>);<br>}</div></div></div>
+</div>
+<div class="two-column" style="margin-bottom:4rem">
+<div class="reveal-left"><div class="code-block"><div class="code-header"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div><span class="code-lang">Blazor · Component + Validation</span></div><div class="code-content"><span class="comment">&lt;@* User Registration Form *@&gt;</span><br><span class="tag">&lt;EditForm</span> <span class="attr">Model</span>=<span class="string">"@model"</span><br>    <span class="attr">OnValidSubmit</span>=<span class="string">"HandleSubmit"</span><span class="tag">&gt;</span><br>    <span class="tag">&lt;DataAnnotationsValidator</span> <span class="tag">/&gt;</span><br>    <span class="tag">&lt;ValidationSummary</span> <span class="attr">class</span>=<span class="string">"text-danger"</span> <span class="tag">/&gt;</span><br>    <span class="tag">&lt;InputText</span> <span class="attr">@bind-Value</span>=<span class="string">"model.Name"</span><br>        <span class="attr">class</span>=<span class="string">"form-control"</span> <span class="tag">/&gt;</span><br>    <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="string">"submit"</span><br>        <span class="attr">class</span>=<span class="string">"btn btn-primary"</span><span class="tag">&gt;</span><br>        Submit<br>    <span class="tag">&lt;/button&gt;</span><br><span class="tag">&lt;/EditForm&gt;</span></div></div></div>
+<div class="reveal-right"><div class="card"><div class="card-icon"><i class="fas fa-bolt"></i></div><h3>UI/UX in Blazor Web Apps</h3><p style="color:var(--text-secondary);margin-bottom:1rem">Blazor allows .NET developers to build interactive web UIs using C# instead of JavaScript. Component-based architecture with clean separation of concerns.</p><ul><li>CSS isolation per component</li><li>Loading indicators for async calls</li><li>Accessible ARIA attributes</li><li>Responsive layout with CSS Grid</li><li>EditForm with DataAnnotations</li><li>Client-side validation feedback</li></ul></div></div>
+</div>
+<div class="two-column">
+<div class="reveal-left"><div class="card"><div class="card-icon"><i class="fas fa-globe"></i></div><h3>UI/UX in Web — HTML, CSS & JS</h3><p style="color:var(--text-secondary);margin-bottom:1rem">HTML5 + CSS3 + JavaScript form the foundation of every web UI. Proper semantic HTML and CSS techniques ensure accessibility and responsiveness.</p><ul><li>Semantic tags: header, main, nav</li><li>CSS variables for theme consistency</li><li>Flexbox / Grid for responsive layouts</li><li>Media queries for mobile-first design</li><li>:focus-visible styles for keyboard users</li><li>CSS transitions for smooth feedback</li></ul></div></div>
+<div class="reveal-right"><div class="code-block"><div class="code-header"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div><span class="code-lang">HTML/CSS · Responsive + Accessible</span></div><div class="code-content"><span class="comment">/* CSS Variables for Design System */</span><br><span class="attr">:root</span> {<br>    <span class="attr">--primary</span>: <span class="string">#2563EB</span>;<br>    <span class="attr">--font</span>: <span class="string">'Segoe UI', sans</span>;<br>    <span class="attr">--radius</span>: <span class="number">8px</span>;<br>}<br><br><span class="comment">/* Responsive Grid Layout */</span><br><span class="attr">.dashboard</span> {<br>    <span class="attr">display</span>: <span class="string">grid</span>;<br>    <span class="attr">grid-template-columns</span>: <span class="string">repeat(auto-fit, minmax(280px, 1fr))</span>;<br>    <span class="attr">gap</span>: <span class="number">1.5rem</span>;<br>}<br><br><span class="comment">/* Focus style for accessibility */</span><br><span class="attr">button:focus-visible</span> {<br>    <span class="attr">outline</span>: <span class="number">3px</span> <span class="string">solid</span> <span class="attr">var</span>(--primary);<br>    <span class="attr">outline-offset</span>: <span class="number">2px</span>;<br>}</div></div></div>
+</div>
+</section>
+
+<section id="design-systems">
+<div class="glow-bg" style="top:30%;right:-150px;background:#F59E0B"></div>
+<div class="chapter-header reveal">
+<div class="chapter-number">CHAPTER 03</div>
+<h2>Design Systems & Process</h2>
+<p>Color Theory, Typography & The UX Design Process</p>
+<div class="section-divider"></div>
+</div>
+<div class="two-column" style="margin-bottom:4rem">
+<div class="reveal-left">
+<h3 style="font-size:1.5rem;margin-bottom:1.5rem;text-align:center">Color Roles</h3>
+<div class="color-grid">
+<div class="color-swatch" style="background:#2563EB;color:white"><div class="color-hex">#2563EB</div><div class="color-name">Primary</div></div>
+<div class="color-swatch" style="background:#10B981;color:white"><div class="color-hex">#10B981</div><div class="color-name">Success</div></div>
+<div class="color-swatch" style="background:#EF4444;color:white"><div class="color-hex">#EF4444</div><div class="color-name">Error</div></div>
+<div class="color-swatch" style="background:#F59E0B;color:white"><div class="color-hex">#F59E0B</div><div class="color-name">Warning</div></div>
+<div class="color-swatch" style="background:#1E293B;color:white"><div class="color-hex">#1E293B</div><div class="color-name">Dark BG</div></div>
+<div class="color-swatch" style="background:#F8FAFC;color:#0F172A"><div class="color-hex">#F8FAFC</div><div class="color-name">Light BG</div></div>
+</div>
+</div>
+<div class="reveal-right">
+<h3 style="font-size:1.5rem;margin-bottom:1.5rem;text-align:center">Typography Scale</h3>
+<div class="type-scale">
+<div class="type-item"><span class="type-size">36pt</span><span class="type-example" style="font-size:2rem;font-weight:700">Heading 1</span><span class="type-tag">Bold</span></div>
+<div class="type-item"><span class="type-size">28pt</span><span class="type-example" style="font-size:1.5rem;font-weight:700">Heading 2</span><span class="type-tag">Bold</span></div>
+<div class="type-item"><span class="type-size">22pt</span><span class="type-example" style="font-size:1.25rem;font-weight:600">Heading 3</span><span class="type-tag">Semi-bold</span></div>
+<div class="type-item"><span class="type-size">14pt</span><span class="type-example" style="font-size:0.875rem">Body text for reading content</span><span class="type-tag">Regular</span></div>
+<div class="type-item"><span class="type-size">11pt</span><span class="type-example" style="font-size:0.75rem;color:var(--text-muted)">Caption and helper text</span><span class="type-tag">Muted</span></div>
+</div>
+</div>
+</div>
+<div class="chapter-header reveal"><h3 style="font-size:1.8rem;margin-bottom:1rem">The UX Design Process</h3></div>
+<div class="timeline">
+<div class="timeline-item reveal"><div class="timeline-num">1</div><div class="timeline-content"><h4>Research</h4><p>User interviews, surveys, competitor analysis, personas & journey maps.</p></div></div>
+<div class="timeline-item reveal"><div class="timeline-num">2</div><div class="timeline-content"><h4>Define</h4><p>Problem statements, user stories, information architecture & site maps.</p></div></div>
+<div class="timeline-item reveal"><div class="timeline-num">3</div><div class="timeline-content"><h4>Design</h4><p>Wireframes, mockups, component libraries, design tokens & style guides.</p></div></div>
+<div class="timeline-item reveal"><div class="timeline-num">4</div><div class="timeline-content"><h4>Prototype</h4><p>Interactive clickable prototypes. Test navigation & interaction flows.</p></div></div>
+<div class="timeline-item reveal"><div class="timeline-num">5</div><div class="timeline-content"><h4>Test</h4><p>Usability testing, A/B testing, heatmaps & accessibility audits.</p></div></div>
+<div class="timeline-item reveal"><div class="timeline-num">6</div><div class="timeline-content"><h4>Launch & Iterate</h4><p>Deploy, collect analytics, gather feedback & continuously improve.</p></div></div>
+</div>
+</section>
+
+<section id="application">
+<div class="glow-bg" style="bottom:20%;left:-200px;background:#7C3AED"></div>
+<div class="chapter-header reveal">
+<div class="chapter-number">CHAPTER 04</div>
+<h2>Real-World Application</h2>
+<p>Responsive Design, Good vs Bad UX & Professional Tools</p>
+<div class="section-divider"></div>
+</div>
+<div class="two-column" style="margin-bottom:4rem">
+<div class="reveal-left">
+<h3 style="font-size:1.5rem;margin-bottom:1.5rem;text-align:center">Device Breakpoints</h3>
+<div class="breakpoint-cards">
+<div class="breakpoint-card"><div class="breakpoint-icon"><i class="fas fa-mobile-alt"></i></div><h4>Mobile</h4><p>320 – 767 px</p></div>
+<div class="breakpoint-card"><div class="breakpoint-icon"><i class="fas fa-tablet-alt"></i></div><h4>Tablet</h4><p>768 – 1023 px</p></div>
+<div class="breakpoint-card"><div class="breakpoint-icon"><i class="fas fa-desktop"></i></div><h4>Desktop</h4><p>1024 px +</p></div>
+</div>
+</div>
+<div class="reveal-right">
+<h3 style="font-size:1.5rem;margin-bottom:1.5rem;text-align:center">WCAG Accessibility Checklist</h3>
+<ul class="checklist">
+<li><i class="fas fa-check-circle"></i> 4.5:1 contrast ratio</li>
+<li><i class="fas fa-check-circle"></i> Alt text on images</li>
+<li><i class="fas fa-check-circle"></i> ARIA landmark roles</li>
+<li><i class="fas fa-check-circle"></i> Keyboard navigable</li>
+<li><i class="fas fa-check-circle"></i> No seizure-inducing content</li>
+</ul>
+</div>
+</div>
+<div class="chapter-header reveal" style="margin-top:2rem"><h3 style="font-size:1.8rem;margin-bottom:1rem">Bad UX vs Good UX</h3></div>
+<div class="comparison-container">
+<div class="comparison-card bad reveal">
+<h3><i class="fas fa-times-circle"></i> Bad UX Examples</h3>
+<div class="comparison-item bad"><i class="fas fa-times"></i><p><strong>No input validation</strong>Users submit wrong data, crashing the system</p></div>
+<div class="comparison-item bad"><i class="fas fa-times"></i><p><strong>Generic error: 'Error 500'</strong>Users have no idea what went wrong</p></div>
+<div class="comparison-item bad"><i class="fas fa-times"></i><p><strong>All buttons same color</strong>No visual priority, confuses the user</p></div>
+<div class="comparison-item bad"><i class="fas fa-times"></i><p><strong>No loading indicator</strong>Users click again, thinking it froze</p></div>
+<div class="comparison-item bad"><i class="fas fa-times"></i><p><strong>Tiny 8px font</strong>Strains eyes, especially on mobile</p></div>
+</div>
+<div class="comparison-card good reveal">
+<h3><i class="fas fa-check-circle"></i> Good UX Examples</h3>
+<div class="comparison-item good"><i class="fas fa-check"></i><p><strong>Real-time field validation</strong>Highlights errors instantly as user types</p></div>
+<div class="comparison-item good"><i class="fas fa-check"></i><p><strong>'Username already taken'</strong>Clear, actionable, specific message</p></div>
+<div class="comparison-item good"><i class="fas fa-check"></i><p><strong>Primary CTA stands out</strong>Blue button, grey cancel, clear hierarchy</p></div>
+<div class="comparison-item good"><i class="fas fa-check"></i><p><strong>Spinner + 'Saving...' text</strong>User knows system is working</p></div>
+<div class="comparison-item good"><i class="fas fa-check"></i><p><strong>Minimum 14px body text</strong>Readable across all screen sizes</p></div>
+</div>
+</div>
+<div class="chapter-header reveal" style="margin-top:4rem"><h3 style="font-size:1.8rem;margin-bottom:1rem">Website Mockup Comparison</h3><p>Same registration form — completely different experience</p></div>
+<div class="mockup-comparison">
+<div class="mockup-card bad-mockup reveal">
+<div class="mockup-header"><i class="fas fa-times-circle" style="color:var(--error)"></i><span style="color:var(--error);font-weight:600">Poor UI/UX</span></div>
+<div class="mockup-body">
+<div class="bad-nav"><a href="#">MY WEBSITE</a><a href="#">HOME</a><a href="#">STUFF</a><a href="#">CLICK HERE</a><a href="#">CONTACT</a><a href="#">ABOUT</a></div>
+<div class="bad-title">REGISTER NOW!!!</div>
+<input class="bad-input" placeholder="type here"><br>
+<input class="bad-input" placeholder="type here"><br>
+<button class="bad-button">Submit</button>
+<div class="bad-text">error. click here. also click here for other stuff. visit our page. subscribe to newsletter. win prize.</div>
+<div style="margin-top:1rem;font-size:0.75rem;color:var(--text-muted)"><i class="fas fa-times" style="color:var(--error);margin-right:0.3rem"></i>No labels · Clashing colors · No spacing · Confusing layout</div>
+</div>
+</div>
+<div class="mockup-card good-mockup reveal">
+<div class="mockup-header"><i class="fas fa-check-circle" style="color:var(--success)"></i><span style="color:var(--success);font-weight:600">Great UI/UX</span></div>
+<div class="mockup-body">
+<div class="good-nav"><span class="logo">AppName</span><a href="#">Home</a><a href="#">Features</a><a href="#">Pricing</a><a href="#" class="signin">Sign In</a></div>
+<div class="good-title">Create your account</div>
+<div class="good-subtitle">Join 10,000+ users. Free forever.</div>
+<label class="good-label">Email address</label>
+<input class="good-input" placeholder="you@example.com">
+<label class="good-label">Password</label>
+<input class="good-input" type="password" placeholder="Min. 8 characters">
+<div class="good-helper"><i class="fas fa-info-circle"></i>Use uppercase, number & symbol for stronger password</div>
+<button class="good-button">Create Account <i class="fas fa-arrow-right"></i></button>
+<div class="good-footer">Already have an account? <a href="#">Sign in</a></div>
+<div style="margin-top:1rem;font-size:0.75rem;color:var(--text-muted);text-align:center"><i class="fas fa-check" style="color:var(--success);margin-right:0.3rem"></i>Clear labels · Color hierarchy · Rounded CTA · Helper text</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="tools">
+<div class="glow-bg" style="top:10%;right:-200px;background:#EC4899"></div>
+<div class="chapter-header reveal">
+<div class="chapter-number">TOOLS</div>
+<h2>UI/UX Tools & Ecosystem</h2>
+<p>Professional tools for design, development, and testing</p>
+<div class="section-divider"></div>
+</div>
+<div class="tools-grid">
+<div class="tool-card reveal"><div class="tool-icon"><i class="fab fa-figma"></i></div><span class="tool-tag">Design</span><h4>Figma</h4><p>Industry-standard vector design and prototyping tool. Collaborative, cloud-based.</p></div>
+<div class="tool-card reveal"><div class="tool-icon"><i class="fas fa-pen-nib"></i></div><span class="tool-tag">Design</span><h4>Adobe XD</h4><p>Adobe's UX design tool with voice prototyping and auto-animate features.</p></div>
+<div class="tool-card reveal"><div class="tool-icon"><i class="fas fa-pencil-ruler"></i></div><span class="tool-tag">Wireframe</span><h4>Balsamiq</h4><p>Rapid low-fidelity wireframing. Perfect for quick layout sketches.</p></div>
+<div class="tool-card reveal"><div class="tool-icon"><i class="fas fa-code"></i></div><span class="tool-tag">Dev</span><h4>VS Code</h4><p>Best code editor with Emmet, live preview, and UI framework extensions.</p></div>
+<div class="tool-card reveal"><div class="tool-icon"><i class="fab fa-bootstrap"></i></div><span class="tool-tag">CSS Lib</span><h4>Bootstrap</h4><p>Responsive CSS framework. Pre-built components for rapid UI building.</p></div>
+<div class="tool-card reveal"><div class="tool-icon"><i class="fab fa-chrome"></i></div><span class="tool-tag">Testing</span><h4>Chrome DevTools</h4><p>Test layouts, accessibility, network, responsive views in browser.</p></div>
+<div class="tool-card reveal"><div class="tool-icon"><i class="fas fa-universal-access"></i></div><span class="tool-tag">A11y</span><h4>Axe DevTools</h4><p>Accessibility testing browser extension. Detects WCAG violations.</p></div>
+<div class="tool-card reveal"><div class="tool-icon"><i class="fas fa-tachometer-alt"></i></div><span class="tool-tag">Audit</span><h4>Lighthouse</h4><p>Google tool for performance, SEO, accessibility & best practice scores.</p></div>
+</div>
+</section>
+
+<section id="takeaways" style="min-height:80vh">
+<div class="chapter-header reveal">
+<div class="chapter-number">KEY TAKEAWAYS</div>
+<h2>What to Remember</h2>
+<div class="section-divider"></div>
+</div>
+<div class="takeaways-grid">
+<div class="takeaway-card reveal"><div class="takeaway-icon"><i class="fas fa-chart-line"></i></div><p><strong style="color:var(--text-primary)">UI/UX directly impacts</strong> user retention, revenue, and trust. Good design is invisible — bad design is unforgettable.</p></div>
+<div class="takeaway-card reveal"><div class="takeaway-icon"><i class="fab fa-windows"></i></div><p><strong style="color:var(--text-primary)">Windows Forms:</strong> font consistency, tab order & validation are core UX principles for desktop apps.</p></div>
+<div class="takeaway-card reveal"><div class="takeaway-icon"><i class="fas fa-bolt"></i></div><p><strong style="color:var(--text-primary)">Blazor:</strong> component isolation, EditForm & ARIA attributes make modern web UIs accessible.</p></div>
+<div class="takeaway-card reveal"><div class="takeaway-icon"><i class="fas fa-globe"></i></div><p><strong style="color:var(--text-primary)">Web:</strong> semantic HTML, CSS variables, media queries & focus styles are essential foundations.</p></div>
+<div class="takeaway-card reveal"><div class="takeaway-icon"><i class="fas fa-mobile-alt"></i></div><p><strong style="color:var(--text-primary)">Responsive design</strong> ensures your interface works beautifully across all devices and screen sizes.</p></div>
+<div class="takeaway-card reveal"><div class="takeaway-icon"><i class="fas fa-lightbulb"></i></div><p><strong style="color:var(--text-primary)">Good design is invisible</strong> — bad design is unforgettable. Invest in UX early to save time and money.</p></div>
+</div>
+</section>
+
+<section class="footer-section" id="footer" style="min-height:60vh">
+<div class="glow-bg" style="top:50%;left:50%;transform:translate(-50%,-50%);background:var(--primary);opacity:0.08"></div>
+<h2 class="reveal">Thank You!</h2>
+<p class="reveal" style="font-size:1.1rem">Humayun & Maaz Qasir | Air University Kharian</p>
+<div class="reveal" style="margin-top:2rem">
+<a href="#" class="footer-cta"><i class="fas fa-comments"></i> Let's Discuss</a>
+</div>
+</section>
+
+<script>
+// Particle System
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let mouseX = 0, mouseY = 0;
+
+function resizeCanvas() {
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+constructor() {
+this.x = Math.random() * canvas.width;
+this.y = Math.random() * canvas.height;
+this.size = Math.random() * 2 + 0.5;
+this.speedX = (Math.random() - 0.5) * 0.5;
+this.speedY = (Math.random() - 0.5) * 0.5;
+this.opacity = Math.random() * 0.5 + 0.1;
+}
+update() {
+this.x += this.speedX;
+this.y += this.speedY;
+if (this.x > canvas.width) this.x = 0;
+if (this.x < 0) this.x = canvas.width;
+if (this.y > canvas.height) this.y = 0;
+if (this.y < 0) this.y = canvas.height;
+}
+draw() {
+ctx.fillStyle = `rgba(37, 99, 235, ${this.opacity})`;
+ctx.beginPath();
+ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+ctx.fill();
+}
+}
+
+function initParticles() {
+particles = [];
+for (let i = 0; i < 80; i++) {
+particles.push(new Particle());
+}
+}
+initParticles();
+
+function animateParticles() {
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+particles.forEach(p => {
+p.update();
+p.draw();
+});
+// Draw connections
+for (let i = 0; i < particles.length; i++) {
+for (let j = i + 1; j < particles.length; j++) {
+const dx = particles[i].x - particles[j].x;
+const dy = particles[i].y - particles[j].y;
+const distance = Math.sqrt(dx * dx + dy * dy);
+if (distance < 150) {
+ctx.strokeStyle = `rgba(37, 99, 235, ${0.1 * (1 - distance / 150)})`;
+ctx.lineWidth = 0.5;
+ctx.beginPath();
+ctx.moveTo(particles[i].x, particles[i].y);
+ctx.lineTo(particles[j].x, particles[j].y);
+ctx.stroke();
+}
+}
+}
+requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// Scroll Progress
+const scrollProgress = document.getElementById('scrollProgress');
+window.addEventListener('scroll', () => {
+const scrollTop = window.scrollY;
+const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+const scrollPercent = (scrollTop / docHeight) * 100;
+scrollProgress.style.width = scrollPercent + '%';
+});
+
+// Scroll Reveal Animation
+const observerOptions = {
+root: null,
+rootMargin: '0px',
+threshold: 0.1
+};
+
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+entry.target.classList.add('active');
+// Trigger counter animation for stat cards
+if (entry.target.querySelector('.counter')) {
+const counter = entry.target.querySelector('.counter');
+const target = parseInt(counter.getAttribute('data-target'));
+let current = 0;
+const increment = target / 50;
+const timer = setInterval(() => {
+current += increment;
+if (current >= target) {
+counter.textContent = target + '%';
+clearInterval(timer);
+} else {
+counter.textContent = Math.floor(current);
+}
+}, 30);
+}
+}
+});
+}, observerOptions);
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+observer.observe(el);
+});
+
+// Observe stat cards for counter animation
+document.querySelectorAll('.stat-card').forEach(el => {
+observer.observe(el);
+});
+
+// Smooth scroll for navigation links
+document.querySelectorAll('.nav-links a').forEach(link => {
+link.addEventListener('click', (e) => {
+e.preventDefault();
+const target = document.querySelector(link.getAttribute('href'));
+if (target) {
+target.scrollIntoView({ behavior: 'smooth' });
+}
+});
+});
+
+// Mouse parallax effect on hero
+const hero = document.querySelector('.hero');
+hero.addEventListener('mousemove', (e) => {
+const x = (e.clientX / window.innerWidth - 0.5) * 20;
+const y = (e.clientY / window.innerHeight - 0.5) * 20;
+document.querySelectorAll('.floating-icon').forEach((icon, index) => {
+const speed = (index + 1) * 0.5;
+icon.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+});
+});
+</script>
+</body>
+</html>
